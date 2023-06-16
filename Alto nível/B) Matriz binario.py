@@ -4,8 +4,8 @@ def numero_para_vetor_binario(numero, tamanho):
     return vetor_binario
 def construir_matriz(n, m):
 
-    ReprN = numero_para_vetor_binario(n, m.bit_length())
-    ReprM = numero_para_vetor_binario(m, n.bit_length())
+    ReprN = numero_para_vetor_binario(n,32)
+    ReprM = numero_para_vetor_binario(m,32)
     print(ReprN)
     print(ReprM)
     matriz = []
