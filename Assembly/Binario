@@ -1,0 +1,22 @@
+.text
+.globl main
+
+main:
+	jal scanf
+	la $s1, binary             # Carrega o endereço de memória de 'binary' em $s1
+	addi $s2, $zero, 31        # Inicializa contador para 31 (posição mais significativa)
+    	addi $s3, $zero, 1         # Inicializa contador para 1 (posição menos significativa)
+    	j fim
+scanf:
+	li $v0, 4 #syscall de print string
+        la $a0, prompt #conteudo para printar
+        syscall
+	li $v0, 5 #syscall para ler inteiros
+        syscall
+        jr $ra
+fim:
+	li $v0,10                        # termina
+        syscall
+.data
+	prompt: .asciiz "Digite um número inteiro: "
+	binary: .space 32
