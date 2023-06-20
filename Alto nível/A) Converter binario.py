@@ -6,3 +6,4 @@ def numero_para_vetor_binario(numero, tamanho):
 n = int(input("Digite o valor de n: "))
 ReprN = numero_para_vetor_binario(n,32)
 print("Vetor binário:", ReprN)
+
