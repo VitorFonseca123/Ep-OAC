@@ -13,7 +13,14 @@ scanf:
         syscall
 	li $v0, 5 #syscall para ler inteiros
         syscall
+        add $t0, $t0, $v0 #coloca valor no registrador temporario
         jr $ra
+Loop:
+	#converter
+	bgtz $t0, Loop 
+	
+Continue:
+	
 fim:
 	li $v0,10                        # termina
         syscall
