@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
+
 #define grau 4
 #define n 5 //iterações
 
