@@ -2,24 +2,24 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <math.h>
-
-void derivada(int grau, int fx[]);
+#define grau 4
+void derivada(int fx[], int fdx[]);
 
 int main()
 {
-    int grau = 4;
-    int fx[4] = {0,1,2,4}; 
-    derivada(grau, fx);
+    //int grau = 4;
+    int fx[grau] = {0,1,2,4}; 
+    int fdx[grau-1];
+    derivada(fx, fdx);
     for(int i = 0;i<grau;i++){
-        printf("%dx^%d+", fx[i], i);
+        printf("%dx^%d+", fdx[i], i);
     }
 }
-void derivada(int grau,int fx[]){
+void derivada(int fx[],  int fdx[]){
     for(int i = 0;i<grau;i++){
         if(fx[i]!=0){
-            fx[i-1] = fx[i]*i;
-            fx[i]=0;
+            fdx[i-1] = fx[i]*i;
+            fdx[i]=0;
         }
-        
     }
 }
