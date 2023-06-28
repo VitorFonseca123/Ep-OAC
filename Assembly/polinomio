@@ -1,0 +1,53 @@
+.text
+.globl main
+
+main:
+	la $a0, grau
+	la $t0, fx
+	li $t1, 0       # Índice do fx
+	li $t2, 4       # Tamanho do vetor
+	
+
+	la $t4, fdx
+	li $t5, 0       # Índice do fdx
+
+incrementar:
+	addi $t1, $t1, 1
+	addi $t0, $t0, 4
+
+derivada:
+	lw $t3, 0($t0)   # Carrega o valor do vetor[$t1] em $t3
+	beqz $t3, incrementar  # Compara se é igual a zero
+
+	mul $t6, $t3, $t1
+	sw $t6, ($t4)
+	addi $t4, $t4, 4
+
+	blt $t1, 3, incrementar  # Verifica se $t1 < 4 (grau)
+print:
+	la $t4, fdx
+    	li $t5, 0       # Índice do fdx
+LoopPrint:
+    lw $t3, 0($t4)   # Carrega o valor do vetor[$t1] em $t3
+
+    move $a0, $t3
+    li $v0, 1        # Código do syscall para imprimir um inteiro
+    syscall
+    li $v0, 4
+    la $a0, espaco
+    syscall
+    addi $t5, $t5, 1
+    bge $t5, $t2, fim
+    addi $t4, $t4, 4
+    j LoopPrint
+fim:
+	li $v0, 10      # Termina
+	syscall
+
+.data
+	grau: .word 4   # Grau do polinômio, considerando que começa em 0
+	n: .word 5      # Número de iterações
+	x0: .word 2     # Primeiro ponto estimado para raiz
+	fx: .word 0, 1, 2, 4   # Vetor com 4 elementos
+	fdx: .word 0, 0, 0, 0
+	espaco: .asciiz ", "
