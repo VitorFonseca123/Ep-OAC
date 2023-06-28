@@ -11,9 +11,9 @@ void newton(int fx[], int fdx[], int x0);
 int y(int x, int fx[]);
 int main()
 {
-    int fx[grau] = {0,1,2,4}; 
+    int fx[grau] = {1,1,2,4}; 
     int fdx[grau];
-    int x0=2;
+    int x0=10;
     derivada(fx, fdx);
     newton(fx,fdx, x0);
      
@@ -43,10 +43,10 @@ void newton(int fx[], int fdx[], int x0){
             int x1 = x0 - y(x0, fx)/der;
             der = y(x1, fdx);
             if(der == 0){
-                printf("%f, parou na iteração: ", x1, i);
+                printf("%d\n, parou na iteração: ", x1, i);
                 return;
             } 
-            printf("%f", x1);
+            printf("%d\n", x1);
             x0=x1;
         }
         
