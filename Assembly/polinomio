@@ -48,6 +48,6 @@ fim:
 	grau: .word 4   # Grau do polinômio, considerando que começa em 0
 	n: .word 5      # Número de iterações
 	x0: .word 2     # Primeiro ponto estimado para raiz
-	fx: .word 0, 1, 2, 4   # Vetor com 4 elementos
+	fx: .word 1, 2, 5, 10   # Vetor com 4 elementos
 	fdx: .word 0, 0, 0, 0
 	espaco: .asciiz ", "
