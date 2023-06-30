@@ -2,44 +2,126 @@
 .globl main
 
 main:
-	la $a0, grau
+	lw $t9, grau
+	subi $t9, $t9, 1
 	la $t0, fx
 	li $t1, 0       # Índice do fx
 	li $t2, 4       # Tamanho do vetor
-	
 
 	la $t4, fdx
 	li $t5, 0       # Índice do fdx
-
-incrementar:
-	addi $t1, $t1, 1
-	addi $t0, $t0, 4
+	jal derivada
+	jal print
+	j newton
 
 derivada:
+	addi $t1, $t1, 1
+	addi $t0, $t0, 4
 	lw $t3, 0($t0)   # Carrega o valor do vetor[$t1] em $t3
-	beqz $t3, incrementar  # Compara se é igual a zero
+	beqz $t3, derivada  # Compara se é igual a zero
 
 	mul $t6, $t3, $t1
 	sw $t6, ($t4)
 	addi $t4, $t4, 4
 
-	blt $t1, 3, incrementar  # Verifica se $t1 < 4 (grau)
+	blt $t1, $t9, derivada  # Verifica se $t1 < 4 (grau)
+	jr $ra
+
 print:
 	la $t4, fdx
-    	li $t5, 0       # Índice do fdx
+	li $t5, 0       # Índice do fdx
 LoopPrint:
-    lw $t3, 0($t4)   # Carrega o valor do vetor[$t1] em $t3
+	lw $t3, 0($t4)   # Carrega o valor do vetor em $t3
 
-    move $a0, $t3
-    li $v0, 1        # Código do syscall para imprimir um inteiro
-    syscall
-    li $v0, 4
-    la $a0, espaco
-    syscall
-    addi $t5, $t5, 1
-    bge $t5, $t2, fim
-    addi $t4, $t4, 4
-    j LoopPrint
+	move $a0, $t3
+	li $v0, 1        # Código do syscall para imprimir um inteiro
+	syscall
+	li $v0, 4
+	la $a0, espaco
+	syscall
+	addi $t5, $t5, 1
+	bge $t5, $t2, JumpReturn
+	addi $t4, $t4, 4
+	j LoopPrint
+	jr $ra
+
+newton:
+	la $a1, x0 
+	la $a2, fdx
+	la $a3, fx
+
+	li $t1, 0 #contador
+	li $t2, 1 #resultado da potencia começa em 1
+	li $t3, 0 
+	li $t4, 0 #contador y
+	li $t5, 0 #contador potencia
+	subu $sp, $sp, 8
+	sw $a2, 0($sp)
+	jal y
+	beqz $v0, derivada0
+LoopNewton:
+	li $t2, 1 #resultado da potencia começa em 1
+	li $t3, 0 
+	li $t4, 0 #contador y
+	li $t5, 0 #contador potencia
+	move $v1, $v0 #coloca o y da derivada em v1
+	sw $a3, 0($sp)
+	jal y
+	div $t6, $v0, $v1
+	sub $t7, $a1, $t6 #t7 = x1
+	li $t2, 1 #resultado da potencia começa em 1
+	li $t3, 0 
+	li $t4, 0 #contador y
+	li $t5, 0 #contador potencia
+	move $v1, $v0 #coloca o y da derivada em v1
+	sw $a2, 0($sp)
+	beqz $v0, derivada0
+	li $v0, 1
+	move $a0, $t6
+	syscall 
+	li $v0, 4
+	la $a0, espaco
+	syscall
+	move $a1, $t7
+
+	addi $t1, $t1, 1
+	lw $a0, n
+	sub $a0, $a0, 1
+	blt $a1, $a0, LoopNewton
+	j fim
+
+y:
+	sw $ra, 4($sp)
+	lw $s0, 0($sp) #endereço do vetor
+	lw $s1, 0($s0) #valor do vetor
+
+	jal potencia
+	#v0 resultado
+	mul $t3, $t2, $s1 
+	add $v0, $v0, $t3
+	addi $t4, $t4, 1
+	addi $s0, $s0, 4
+
+	blt $t4, $t9, y 
+	lw $ra, 4($sp)
+	jr $ra
+
+potencia:
+	bgez $t5, JumpReturn # se o indice for 0, ele volta com t1 valendo 1
+	mul $t2, $t2, $a1 
+	addi $t5, $t5, 1  
+	j potencia
+JumpReturn:
+	jr $ra
+
+derivada0:
+	li $v0, 4
+	la $a0, parou
+	li $v0, 1
+	move $a0, $t1
+	syscall
+	j fim
+
 fim:
 	li $v0, 10      # Termina
 	syscall
@@ -47,7 +129,8 @@ fim:
 .data
 	grau: .word 4   # Grau do polinômio, considerando que começa em 0
 	n: .word 5      # Número de iterações
-	x0: .word 2     # Primeiro ponto estimado para raiz
+	x0: .word 10     # Primeiro ponto estimado para raiz
 	fx: .word 1, 2, 5, 10   # Vetor com 4 elementos
 	fdx: .word 0, 0, 0, 0
 	espaco: .asciiz ", "
+	parou: .asciiz "Parou na iteracao: "
