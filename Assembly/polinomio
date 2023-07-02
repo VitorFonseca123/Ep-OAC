@@ -11,7 +11,7 @@ main:
 	la $t4, fdx
 	li $t5, 0       # Índice do fdx
 	jal derivada
-	jal print
+	#jal print
 	j newton
 
 derivada:
@@ -44,8 +44,7 @@ LoopPrint:
 	addi $t4, $t4, 4
 	j LoopPrint
 	jr $ra
-
-newton:
+inicializa:
 	lw $a1, x0 
 	
 	la $a2, fdx
@@ -56,21 +55,28 @@ newton:
 	li $t3, 0 
 	li $t4, 0 #contador y
 	li $t5, 0 #contador potencia
+	jr $ra
+newton:
+	jal inicializa
 	
 	subu $sp, $sp, 8
 	sw $a2, 0($sp)
 	lw $s0, 0($sp) #endereço do vetor
 	lw $s1, 0($s0) #valor do vetor
-	
 	jal y
 	beqz $v0, derivada0
 LoopNewton:
+	
 	li $t2, 1 #resultado da potencia começa em 1
 	li $t3, 0 
 	li $t4, 0 #contador y
 	li $t5, 0 #contador potencia
 	move $v1, $v0 #coloca o y da derivada em v1
+	li $v0, 0
 	sw $a3, 0($sp)
+	lw $s0, 0($sp) #endereço do vetor
+	lw $s1, 0($s0) #valor do vetor
+	addi $t9,$t9,1
 	jal y
 	div $t6, $v0, $v1
 	sub $t7, $a1, $t6 #t7 = x1
@@ -82,7 +88,7 @@ LoopNewton:
 	sw $a2, 0($sp)
 	beqz $v0, derivada0
 	li $v0, 1
-	move $a0, $t6
+	move $a0, $t7
 	syscall 
 	li $v0, 4
 	la $a0, espaco
@@ -92,12 +98,19 @@ LoopNewton:
 	addi $t1, $t1, 1
 	lw $a0, n
 	sub $a0, $a0, 1
-	blt $a1, $a0, LoopNewton
+	li $v0, 0
+	la $a2, fdx
+	sw $a2, 0($sp)
+	lw $s0, 0($sp) #endereço do vetor
+	lw $s1, 0($s0) #valor do vetor
+	jal y
+	blt $t1, $a0, LoopNewton
 	j fim
 
 y:
 	sw $ra, 4($sp)
 	li $t5, 0 #contador potencia
+	li $t2, 1 #contador y
 	jal potencia
 	lw $ra, 4($sp)
 	#v0 resultado
@@ -111,12 +124,13 @@ y:
 	jr $ra
 
 potencia:
+	
 	beq  $t5, $t4, JumpReturnPotencia # se o indice for 0, ele volta com t2 valendo 1
 	mul $t2, $t2, $a1 
 	addi $t5, $t5, 1  
 	j potencia
 JumpReturnPotencia:
-	addi $t5, $t5, 1 
+	#addi $t5, $t5, 1 
 	jr $ra
 JumpReturn:
 	jr $ra
@@ -134,7 +148,7 @@ fim:
 
 .data
 	grau: .word 4   # Grau do polinômio, considerando que começa em 0
-	n: .word 1     # Número de iterações
+	n: .word 5     # Número de iterações
 	x0: .word 10     # Primeiro ponto estimado para raiz
 	fx: .word 1, 1, 2, 4   # Vetor com 4 elementos
 	fdx: .word 0, 0, 0, 0
