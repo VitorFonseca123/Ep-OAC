@@ -104,7 +104,8 @@ LoopNewton:
 	lw $s0, 0($sp) #endereço do vetor
 	lw $s1, 0($s0) #valor do vetor
 	jal y
-	blt $t1, $a0, LoopNewton
+	sub $t9, $t9, 1
+	ble  $t1, $a0, LoopNewton
 	j fim
 
 y:
