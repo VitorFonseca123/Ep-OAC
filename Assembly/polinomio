@@ -130,7 +130,6 @@ potencia:
 	addi $t5, $t5, 1  
 	j potencia
 JumpReturnPotencia:
-	#addi $t5, $t5, 1 
 	jr $ra
 JumpReturn:
 	jr $ra
