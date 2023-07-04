@@ -2,54 +2,34 @@
 .globl main
 
 main:
-	lw $t9, grau
+	lw $t9, grau # carrega o grau que estava em MP, no registrador t9
 	subi $t9, $t9, 1
-	la $t0, fx
+	la $t0, fx # carrega o endereço do polinomio no registrador t0
 	li $t1, 0       # Índice do fx
 	li $t2, 4       # Tamanho do vetor
 
-	la $t4, fdx
+	la $t4, fdx     # carrega o endereço que será salvo a derivada
 	li $t5, 0       # Índice do fdx
 	jal derivada
-	#jal print
 	j newton
 
 derivada:
 	addi $t1, $t1, 1
 	addi $t0, $t0, 4
-	lw $t3, 0($t0)   # Carrega o valor do vetor[$t1] em $t3
+	lw $t3, 0($t0)   # Carrega o valor de fx em $t3
 	beqz $t3, derivada  # Compara se é igual a zero
-
-	mul $t6, $t3, $t1
+	#Regra do tombo
+	mul $t6, $t3, $t1 # Multiplica o número do expoente pelo coeficiente 
 	sw $t6, ($t4)
 	addi $t4, $t4, 4
 
 	blt $t1, $t9, derivada  # Verifica se $t1 < 4 (grau)
 	jr $ra
-
-print:
-	la $t4, fdx
-	li $t5, 0       # Índice do fdx
-LoopPrint:
-	lw $t3, 0($t4)   # Carrega o valor do vetor em $t3
-
-	move $a0, $t3
-	li $v0, 1        # Código do syscall para imprimir um inteiro
-	syscall
-	li $v0, 4
-	la $a0, espaco
-	syscall
-	addi $t5, $t5, 1
-	bge $t5, $t2, JumpReturn
-	addi $t4, $t4, 4
-	j LoopPrint
-	jr $ra
 inicializa:
-	lw $a1, x0 
-	
-	la $a2, fdx
-	la $a3, fx
-	li $v0,0
+	lw $a1, x0 # Carrega o endereço da aproximação inicial
+	la $a2, fdx # Carrega o endereço de fdx
+	la $a3, fx # Carrega o endereço de fx
+	li $v0,0   
 	li $t1, 0 #contador
 	li $t2, 1 #resultado da potencia começa em 1
 	li $t3, 0 
@@ -104,7 +84,7 @@ LoopNewton:
 	lw $s0, 0($sp) #endereço do vetor
 	lw $s1, 0($s0) #valor do vetor
 	jal y
-	sub $t9, $t9, 1
+	subi $t9, $t9, 1
 	ble  $t1, $a0, LoopNewton
 	j fim
 
@@ -126,12 +106,10 @@ y:
 
 potencia:
 	
-	beq  $t5, $t4, JumpReturnPotencia # se o indice for 0, ele volta com t2 valendo 1
+	beq  $t5, $t4, JumpReturn # se o indice for 0, ele volta com t2 valendo 1
 	mul $t2, $t2, $a1 
 	addi $t5, $t5, 1  
 	j potencia
-JumpReturnPotencia:
-	jr $ra
 JumpReturn:
 	jr $ra
 derivada0:
@@ -151,6 +129,21 @@ fim:
 	n: .word 5     # Número de iterações
 	x0: .word 10     # Primeiro ponto estimado para raiz
 	fx: .word 1, 1, 2, 4   # Vetor com 4 elementos
-	fdx: .word 0, 0, 0, 0
+	fdx: .word 0, 0, 0, 0  # Vetor vazio para receber a derivada
 	espaco: .asciiz ", "
 	parou: .asciiz "Parou na iteracao: "
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
