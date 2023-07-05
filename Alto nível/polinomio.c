@@ -3,23 +3,23 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define grau 4
+#define grau 5
 #define n 5 // Número máximo de iterações
 
-void derivada(int fx[], int fdx[]);
-void newton(int fx[], int fdx[], int x0);
-int y(int x, int fx[]);
+void derivada(double fx[], double fdx[]);
+void newton(double fx[], double fdx[], double x0);
+double y(double x, double fx[]);
 
 int main()
 {
-    int fx[grau] = {1, 1, 2, 4};
-    int fdx[grau];
-    int x0 = 10;
+    double fx[grau] = {0, 0, 0, 4, 7};
+    double fdx[grau];
+    double x0 = 15;
 
     derivada(fx, fdx);
     newton(fx, fdx, x0);
 }
-void derivada(int fx[], int fdx[])
+void derivada(double fx[], double fdx[])
 {
     for (int i = 1; i < grau; i++)
     {
@@ -27,18 +27,18 @@ void derivada(int fx[], int fdx[])
         fdx[i] = 0;
     }
 }
-int y(int x, int fx[])
+double y(double x, double fx[])
 {
-    int resultado = 0;
+    double resultado = 0;
     for (int i = 0; i < grau; i++)
     {
         resultado += fx[i] * pow(x, i);
     }
     return resultado;
 }
-void newton(int fx[], int fdx[], int x0)
+void newton(double fx[], double fdx[], double x0)
 {
-    int der = y(x0, fdx);
+    double der = y(x0, fdx);
     if (der == 0)
     {
         printf("Escolha outro ponto de inicio");
@@ -47,14 +47,14 @@ void newton(int fx[], int fdx[], int x0)
     {
         for (int i = 0; i < n; i++)
         {
-            int x1 = x0 - y(x0, fx) / der;
+            double x1 = x0 - y(x0, fx) / der;
             der = y(x1, fdx);
             if (der == 0)
             {
-                printf("%d\n, parou na iteração: ", x1, i);
+                printf("%f\n, parou na iteração: %f", x1, i);
                 return;
             }
-            printf("%d\n", x1);
+            printf("%f\n", x1);
             x0 = x1;
         }
     }

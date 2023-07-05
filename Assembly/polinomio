@@ -11,19 +11,36 @@ main:
 	la $t4, fdx     # carrega o endereço que será salvo a derivada
 	li $t5, 0       # Índice do fdx
 	jal derivada
+	#jal print
 	j newton
 
 derivada:
 	addi $t1, $t1, 1
 	addi $t0, $t0, 4
 	lw $t3, 0($t0)   # Carrega o valor de fx em $t3
-	beqz $t3, derivada  # Compara se é igual a zero
+	
 	#Regra do tombo
 	mul $t6, $t3, $t1 # Multiplica o número do expoente pelo coeficiente 
 	sw $t6, ($t4)
 	addi $t4, $t4, 4
 
 	blt $t1, $t9, derivada  # Verifica se $t1 < 4 (grau)
+	jr $ra
+print:
+	la $t4, fdx
+	li $t5, 0       # Índice do fdx
+LoopPrint:
+	lw $t3, 0($t4)   # Carrega o valor do vetor em $t3
+	move $a0, $t3
+	li $v0, 1        # Código do syscall para imprimir um inteiro
+	syscall
+	li $v0, 4
+	la $a0, espaco
+	syscall
+	addi $t5, $t5, 1
+	bge $t5, $t2, JumpReturn
+	addi $t4, $t4, 4
+	j LoopPrint
 	jr $ra
 inicializa:
 	lw $a1, x0 # Carrega o endereço da aproximação inicial
@@ -126,9 +143,9 @@ fim:
 
 .data
 	grau: .word 4   # Grau do polinômio, considerando que começa em 0
-	n: .word 5     # Número de iterações
-	x0: .word 10     # Primeiro ponto estimado para raiz
-	fx: .word 1, 1, 2, 4   # Vetor com 4 elementos
+	n: .word 5   # Número de iterações
+	x0: .word 18     # Primeiro ponto estimado para raiz
+	fx: .word 1, 2, 3, 4  # Vetor com 4 elementos
 	fdx: .word 0, 0, 0, 0  # Vetor vazio para receber a derivada
 	espaco: .asciiz ", "
 	parou: .asciiz "Parou na iteracao: "
